@@ -44,37 +44,6 @@ aws s3 sync ~/GreengrassCore/ s3://$artifact_bucket_name/
 mkdir -p ~/GreengrassCore/recipes/
 touch ~/GreengrassCore/recipes/$component_name-$component_version.json
 
-
-"EchoBotStatusUpdateSubscribe": {
-        "topic": "$aws/things/+/shadow/update/delta",
-        "targetTopicPrefix": "$aws/things/+/shadow/update/delta",
-        "source": "IotCore",
-        "target": "Pubsub"
-      },
-      "EchoBotStatusGetSubscribe": {
-        "topic": "$aws/things/+/shadow/get/delta",
-        "targetTopicPrefix": "$aws/things/+/shadow/get/delta",
-        "source": "IotCore",
-        "target": "Pubsub"
-      },
-      "EchoBotDetectionsPublish": {
-        "topic": "dt/echobot/+/detection",
-        "targetTopicPrefix": "dt/echobot/+/detection",
-        "source": "Pubsub",
-        "target": "IotCore"
-      },
-      "EchoBotStatusUpdatePublish": {
-        "topic": "$aws/things/+/shadow/update",
-        "targetTopicPrefix": "$aws/things/+/shadow/update",
-        "source": "Pubsub",
-        "target": "IotCore"
-      },
-      "EchoBotStatusGetPublish": {
-        "topic": "$aws/things/+/shadow/get",
-        "targetTopicPrefix": "$aws/things/+/shadow/get",
-        "source": "Pubsub",
-        "target": "IotCore"
-
 uri=s3://$artifact_bucket_name/artifacts/$component_name/$component_version/$component_name.zip
 script="python3 -m pip install awsiotsdk; python3 -u {artifacts:decompressedPath}/$component_name/echobot.py"
 EchoBotStatusUpdateSubscribe="\$aws/things/$corename/shadow/update/delta"

@@ -3,7 +3,7 @@
 ###############################################################################
 export region=us-east-1
 export acct_num=$(aws sts get-caller-identity --query "Account" --output text)
-export component_version=0.1.0
+export component_version=0.2.0
 corename="echobot_v2"
 # CF parameters
 export demo_name="echobot"
@@ -86,11 +86,11 @@ json=$(jq --null-input \
                 }
             }
         },
-        EchoBotStatusUpdateSubscribe = $EchoBotStatusUpdateSubscribe,
-        EchoBotStatusGetSubscribe = $EchoBotStatusGetSubscribe,
-        EchoBotDetectionsPublish = $EchoBotDetectionsPublish,
-        EchoBotStatusUpdatePublish = $EchoBotStatusUpdatePublish,
-        EchoBotStatusGetPublish = $EchoBotStatusGetPublish
+        "EchoBotStatusUpdateSubscribe" = $EchoBotStatusUpdateSubscribe,
+        "EchoBotStatusGetSubscribe" = $EchoBotStatusGetSubscribe,
+        "EchoBotDetectionsPublish" = $EchoBotDetectionsPublish,
+        "EchoBotStatusUpdatePublish" = $EchoBotStatusUpdatePublish,
+        "EchoBotStatusGetPublish" = $EchoBotStatusGetPublish
     }
 },
 "Manifests": [ { "Platform": { "os": "linux" }, 

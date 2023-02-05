@@ -1,5 +1,5 @@
 #!/usr/bin/python3.6
-import IPCUtils
+import IPCUtils as ipc_utils
 import config_utils
 import time
 import json
@@ -12,6 +12,7 @@ import torchvision
 import torch.nn.functional as F
 import datetime
 import os
+import awsiot.greengrasscoreipc.client as client
 
 config_utils.logger.info("Libraries loaded")
 
@@ -28,55 +29,63 @@ coreInfo = None
 filespath = "/echobot/"
 null = None
 
-def on_stream_event(event: SubscriptionResponseMessage) -> None:
-    try:
-        message = str(event.binary_message.message, 'utf-8')
-        topic = event.binary_message.context.topic
-        config_utils.logger.info('Received new message on topic %s: %s' % (topic, message))
-    except:
-        traceback.print_exc()
+class GetShadowStreamHandler(client.SubscribeToTopicStreamHandler):
+    def __init__(self):
+        super().__init__()
 
-def on_stream_error(error: Exception) -> bool:
-    config_utils.logger.error('Received a stream error.', file=sys.stderr)
-    traceback.print_exc()
-    return False  # Return True to close stream, False to keep stream open.
+    def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
+        global mode
+        if("desired" in event.jsonMessage.message["state"]):
+            if("mode" in event.jsonMessage.message["state"]["desired"]):
+                if(mode != event.jsonMessage.message["state"]["desired"]["mode"]):
+                    mode = event.jsonMessage.message["state"]["desired"]["mode"]
+                    config_utils.logger.info("Current mode is {}".format(mode))
+                    if(mode == "stop"):
+                        stop_object_following()
+                    elif(mode == "follow"):
+                        start_object_following()
+                    elif(mode == "avoidobstacles"):
+                        start_avoid_obstacles()
+
+    def on_stream_error(self, error: Exception) -> bool:
+        # Handle error.
+        return True  # Return True to close stream, False to keep stream open.
+
+    def on_stream_closed(self) -> None:
+        # Handle close.
+        pass
 
 
-def on_stream_closed() -> None:
-    config_utils.logger.info('Subscribe to topic stream closed.')
+class UpdatedShadowStreamHandler(client.SubscribeToTopicStreamHandler):
+    def __init__(self):
+        super().__init__()
 
-# General message notification callback
-def GetShadowResponse(event: SubscriptionResponseMessage) -> None:
-    global mode
-    if("desired" in event.jsonMessage.message["state"]):
-        if("mode" in event.jsonMessage.message["state"]["desired"]):
-            if(mode != event.jsonMessage.message["state"]["desired"]["mode"]):
-                mode = event.jsonMessage.message["state"]["desired"]["mode"]
-                config_utils.logger.info("Current mode is {}".format(mode))
+    def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
+        global mode    
+        if("mode" in event.jsonMessage.message["state"]):
+            if(mode != event.jsonMessage.message["state"]["mode"]):
+                mode = event.jsonMessage.message["state"]["mode"]
+                config_utils.logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
                     stop_object_following()
                 elif(mode == "follow"):
                     start_object_following()
                 elif(mode == "avoidobstacles"):
                     start_avoid_obstacles()
-    
-#Delta change
-def UpdatedShadowResponse(event: SubscriptionResponseMessage) -> None:
-    global mode    
-    if("mode" in event.jsonMessage.message["state"]):
-        if(mode != event.jsonMessage.message["state"]["mode"]):
-            mode = event.jsonMessage.message["state"]["mode"]
-            config_utils.logger.info("Mode changed to {}".format(mode))
-            if(mode == "stop"):
-                stop_object_following()
-            elif(mode == "follow"):
-                start_object_following()
-            elif(mode == "avoidobstacles"):
-                start_avoid_obstacles()
-    if("speed" in event.jsonMessage.message["state"]):
-        update_speed(float(event.jsonMessage.message["state"]["speed"]))
-    if("command" in event.jsonMessage.message["state"]):
-        update_command(event.jsonMessage.message["state"]["command"])
+        if("speed" in event.jsonMessage.message["state"]):
+            update_speed(float(event.jsonMessage.message["state"]["speed"]))
+        if("command" in event.jsonMessage.message["state"]):
+            update_command(event.jsonMessage.message["state"]["command"])
+
+    def on_stream_error(self, error: Exception) -> bool:
+        # Handle error.
+        return True  # Return True to close stream, False to keep stream open.
+
+    def on_stream_closed(self) -> None:
+        # Handle close.
+        pass
+
+
 
 def report_detections(blocked, detectioncount, following):
     message = {
@@ -87,7 +96,7 @@ def report_detections(blocked, detectioncount, following):
         "speed": speed,
         "mode": mode
     }
-    IPCUtils.publish_results_to_pubsub_ipc(config_utils.EchoBotDetectionsPublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotDetectionsPublish, json.dumps(message))
 
 def update_mode(currentmode):
     # Update shadow with current state
@@ -102,7 +111,7 @@ def update_mode(currentmode):
             }
         }
     }
-    IPCUtils.publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
 
 
 def update_speed(currentspeed):
@@ -120,7 +129,7 @@ def update_speed(currentspeed):
             }
         }
     }
-    IPCUtils.publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
    
 
 def update_command(currentcommand):
@@ -133,7 +142,7 @@ def update_command(currentcommand):
             }
         }
     }
-    IPCUtils.publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
 
 
 def update_status(status):
@@ -151,7 +160,7 @@ def update_status(status):
             }
         }
     }
-    IPCUtils.publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
 
   
     
@@ -325,7 +334,7 @@ def set_configuration(config):
         config_utils.EchoBotStatusGetPublish = config["EchoBotStatusGetPublish"]
       
 config_utils.logger.info("Loading recipe parameters...")
-set_configuration(IPCUtils.get_configuration())        
+set_configuration(ipc_utils.IPCUtils().get_configuration())        
 
 config_utils.logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
@@ -365,14 +374,14 @@ stdev = 255.0 * np.array([0.229, 0.224, 0.225])
 normalize = torchvision.transforms.Normalize(mean, stdev)
 
 # Subscribe to shadow topics
-IPCUtils.subscribe_to_topic(config_utils.EchoBotStatusUpdateSubscribe, UpdatedShadowResponse, on_stream_error,on_stream_closed)
+ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusUpdateSubscribe, UpdatedShadowStreamHandler)
 time.sleep(2)
-IPCUtils.subscribe_to_topic(config_utils.EchoBotStatusGetSubscribe, GetShadowResponse, on_stream_error,on_stream_closed)
+ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusGetSubscribe, GetShadowStreamHandler)
 time.sleep(2)
 update_status("Ready for commands")
 
 # Get current shadow
-IPCUtils.publish_results_to_pubsub_ipc(config_utils.EchoBotStatusGetPublish, "")
+ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusGetPublish, "")
 
 while True:
     time.sleep(5)

@@ -1,5 +1,10 @@
 #!/usr/bin/python3.6
 import IPCUtils as ipc_utils
+print("Loading other libraries")
+import config_utils
+print("Loaded config utils")
+config_utils.logger.info("Testing logger library")
+
 from http_parser.parser import HttpParser
 import argparse
 import requests 
@@ -14,7 +19,6 @@ import numpy as np
 import cv2
 import math
 import colorconverter
-import config_utils
 import torch
 import torchvision
 import torch.nn.functional as F
@@ -23,6 +27,8 @@ import os
 import sys
 import uuid
 import logging
+
+config_utils.logger.info("Libraries loaded")
 
 # Global variables
 speed = 0.4 #normal

@@ -46,11 +46,11 @@ touch ~/GreengrassCore/recipes/$component_name-$component_version.json
 
     uri=s3://$artifact_bucket_name/artifacts/$component_name/$component_version/$component_name.zip
     script="python3 -m pip install awsiotsdk http_parser; python3 -u {artifacts:decompressedPath}/$component_name/echobot.py"
-    EchoBotStatusUpdateSubscribe="\$aws/things/$corename/shadow/update/delta"
-    EchoBotStatusGetSubscribe="\$aws/things/$corename/shadow/get/delta"
+    EchoBotStatusUpdateSubscribe="/things/$corename/shadow/update/delta"
+    EchoBotStatusGetSubscribe="/things/$corename/shadow/get/delta"
     EchoBotDetectionsPublish="dt/echobot/$corename/detection"
-    EchoBotStatusUpdatePublish="\$aws/things/$corename/shadow/updateelta"
-    EchoBotStatusGetPublish="\$aws/things/$corename/shadow/get"
+    EchoBotStatusUpdatePublish="/things/$corename/shadow/update/delta"
+    EchoBotStatusGetPublish="/things/$corename/shadow/get"
     json=$(jq --null-input \
     --arg component_name "$component_name" \
     --arg component_version "$component_version" \

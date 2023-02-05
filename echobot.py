@@ -44,7 +44,7 @@ def GetShadowResponse(client, userdata, message):
         if("mode" in json.loads(message.payload)["state"]["desired"]):
             if(mode != json.loads(message.payload)["state"]["desired"]["mode"]):
                 mode = json.loads(message.payload)["state"]["desired"]["mode"]
-                print("Current mode is {}".format(mode))
+                config_utils.logger.info("Current mode is {}".format(mode))
                 if(mode == "stop"):
                     stop_object_following()
                 elif(mode == "follow"):
@@ -58,7 +58,7 @@ def UpdatedShadowResponse(client, userdata, message):
     if("mode" in json.loads(message.payload)["state"]):
         if(mode != json.loads(message.payload)["state"]["mode"]):
             mode = json.loads(message.payload)["state"]["mode"]
-            print("Mode changed to {}".format(mode))
+            config_utils.logger.info("Mode changed to {}".format(mode))
             if(mode == "stop"):
                 stop_object_following()
             elif(mode == "follow"):
@@ -297,7 +297,7 @@ def stop_object_following():
     camera.unobserve_all()
     time.sleep(1.0)
     robot.stop()
-    print("EchoBot stopped")
+    config_utils.logger.info("EchoBot stopped")
     
 def set_configuration(config):
     r"""
@@ -316,18 +316,8 @@ def set_configuration(config):
     elif "EchoBotStatusGetPublish" in config:
         config_utils.EchoBotStatusGetPublish = config["EchoBotStatusGetPublish"]
       
-print("Loading recipe parameters...")
+config_utils.logger.info("Loading recipe parameters...")
 set_configuration(ipc_utils.IPCUtils().get_configuration())        
-
-# Configure logging
-config_utils.logger.info("Configuring Logger...")
-
-logger = logging.getLogger("EchoBot")
-logger.setLevel(logging.DEBUG)
-streamHandler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-streamHandler.setFormatter(formatter)
-logger.addHandler(streamHandler)
 
 config_utils.logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
@@ -343,17 +333,17 @@ config_utils.logger.info("Loading coco model...")
 
 model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
 from jetbot import bgr8_to_jpeg
-print("Loading camera")
+config_utils.logger.info("Loading camera")
 update_status("Loading camera")
 from jetbot import Camera
 camera = Camera.instance(width=300, height=300)
 from jetbot import Robot
 
 # Initialize robot
-print("Initialize robot library")
+config_utils.logger.info("Initialize robot library")
 robot = Robot()
 
-print("Loading model")
+config_utils.logger.info("Loading model")
 collision_model = torchvision.models.alexnet(pretrained=False)
 collision_model.classifier[6] = torch.nn.Linear(collision_model.classifier[6].in_features, 2)
 

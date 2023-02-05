@@ -13,6 +13,19 @@ import torch.nn.functional as F
 import datetime
 import os
 import awsiot.greengrasscoreipc.client as client
+from awsiot.greengrasscoreipc.model import (
+    QOS,
+    ConfigurationUpdateEvents,
+    GetConfigurationRequest,
+    PublishToIoTCoreRequest,
+    PublishToTopicRequest,
+    PublishMessage,
+    JsonMessage,
+    GetThingShadowRequest,
+    UpdateThingShadowRequest,
+    SubscribeToTopicRequest,
+    SubscriptionResponseMessage
+)
 
 config_utils.logger.info("Libraries loaded")
 
@@ -374,9 +387,9 @@ stdev = 255.0 * np.array([0.229, 0.224, 0.225])
 normalize = torchvision.transforms.Normalize(mean, stdev)
 
 # Subscribe to shadow topics
-ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusUpdateSubscribe, UpdatedShadowStreamHandler)
+ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusUpdateSubscribe, UpdatedShadowStreamHandler())
 time.sleep(2)
-ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusGetSubscribe, GetShadowStreamHandler)
+ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusGetSubscribe, GetShadowStreamHandler())
 time.sleep(2)
 update_status("Ready for commands")
 

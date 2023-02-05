@@ -278,21 +278,21 @@ def turn_command(command):
         pass
     
 def start_avoid_obstacles():
-    print("Starting avoid obstacles routine")
+    config_utils.logger.info("Starting avoid obstacles routine")
     update_mode("avoidobstacles")
     camera.unobserve_all()
     update({'new': camera.value})
     camera.observe(update, names='value')  
  
 def start_object_following():
-    print("Starting object follow routine")
+    config_utils.logger.info("Starting object follow routine")
     update_mode("follow")
     camera.unobserve_all()
     camera.observe(execute, names='value')
     
 def stop_object_following():
     global robot, camera
-    print("Stopping object following routing")
+    config_utils.logger.info("Stopping object following routing")
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)
@@ -320,7 +320,8 @@ print("Loading recipe parameters...")
 set_configuration(ipc_utils.IPCUtils().get_configuration())        
 
 # Configure logging
-print("Configuring Logger...")
+config_utils.logger.info("Configuring Logger...")
+
 logger = logging.getLogger("EchoBot")
 logger.setLevel(logging.DEBUG)
 streamHandler = logging.StreamHandler()
@@ -328,18 +329,18 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 streamHandler.setFormatter(formatter)
 logger.addHandler(streamHandler)
 
-
-print("Startup, updating mode and speed shadow")
+config_utils.logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
 update_mode("stop")
 update_speed(speed)
-print("Loading object detector. This will take a minute...")
+config_utils.logger.info("Loading object detector. This will take a minute...")
 update_status("Loading object detector")
 from jetbot import ObjectDetector
 
 ######## Later this can be downloaded form another component
 ##############################################################
-print("Loading coco model...")
+config_utils.logger.info("Loading coco model...")
+
 model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
 from jetbot import bgr8_to_jpeg
 print("Loading camera")

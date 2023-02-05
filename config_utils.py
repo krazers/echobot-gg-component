@@ -26,5 +26,3 @@ logger = getLogger()
 handler = StreamHandler(stdout)
 logger.setLevel(INFO)
 logger.addHandler(handler)
-
-WORK_DIR = path.expandvars(environ.get("PWD"))

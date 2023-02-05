@@ -51,7 +51,7 @@ class IPCUtils:
         connect_future.result(config_utils.TIMEOUT)
         return connection
 
-    def publish_results_to_cloud(self, PAYLOAD):
+    def publish_results_to_cloud(self, topic, PAYLOAD):
         r"""
         Ipc client creates a request and activates the operation to publish messages to the IoT core
         with a qos type over a topic.
@@ -59,7 +59,7 @@ class IPCUtils:
         """
         try:
             request = PublishToIoTCoreRequest(
-                topic_name=config_utils.TOPIC,
+                topic_name=topic,
                 qos=config_utils.QOS_TYPE,
                 payload=dumps(PAYLOAD).encode(),
             )
@@ -78,7 +78,6 @@ class IPCUtils:
         """
         #try:
         request = PublishToTopicRequest()
-        print(topic)
         request.topic = topic
         publish_message = PublishMessage()
         publish_message.json_message = JsonMessage()
@@ -112,7 +111,7 @@ class IPCUtils:
             operation = ipc_client.new_get_configuration()
             operation.activate(request).result(config_utils.TIMEOUT)
             result = operation.get_response().result(config_utils.TIMEOUT)
-            return loads(result.value)
+            return result.value
         except Exception as e:
             config_utils.logger.error(
                 "Exception occured during fetching the configuration: {}".format(str(e))

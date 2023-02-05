@@ -78,6 +78,8 @@ class IPCUtils:
         """
         #try:
         request = PublishToTopicRequest()
+        config_utils.logger.info(topic)
+        config_utils.logger.info(PAYLOAD)
         request.topic = topic
         publish_message = PublishMessage()
         publish_message.json_message = JsonMessage()

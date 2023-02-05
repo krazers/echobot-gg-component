@@ -1,32 +1,16 @@
 #!/usr/bin/python3.6
 import IPCUtils as ipc_utils
-print("Loading other libraries")
 import config_utils
-print("Loaded config utils")
-config_utils.logger.info("Testing logger library")
-
-from http_parser.parser import HttpParser
-import argparse
-import requests 
 import time
 import json
-from pathlib import Path
 from socket import socket, AF_INET, SOCK_DGRAM, IPPROTO_UDP, timeout
-import subprocess
-import threading
-import fileinput
 import numpy as np
 import cv2
-import math
-import colorconverter
 import torch
 import torchvision
 import torch.nn.functional as F
 import datetime
 import os
-import sys
-import uuid
-import logging
 
 config_utils.logger.info("Libraries loaded")
 

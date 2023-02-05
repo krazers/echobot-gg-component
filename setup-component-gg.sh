@@ -44,59 +44,59 @@ aws s3 sync ~/GreengrassCore/ s3://$artifact_bucket_name/
 mkdir -p ~/GreengrassCore/recipes/
 touch ~/GreengrassCore/recipes/$component_name-$component_version.json
 
-uri=s3://$artifact_bucket_name/artifacts/$component_name/$component_version/$component_name.zip
-script="python3 -m pip install awsiotsdk; python3 -u {artifacts:decompressedPath}/$component_name/echobot.py"
-EchoBotStatusUpdateSubscribe="\$aws/things/$corename/shadow/update/delta"
-EchoBotStatusGetSubscribe="\$aws/things/$corename/shadow/get/delta"
-EchoBotDetectionsPublish="dt/echobot/$corename/detection"
-EchoBotStatusUpdatePublish="\$aws/things/$corename/shadow/updateelta"
-EchoBotStatusGetPublish="\$aws/things/$corename/shadow/get"
-json=$(jq --null-input \
-  --arg component_name "$component_name" \
-  --arg component_version "$component_version" \
-  --arg script "$script" \
-  --arg uri "$uri" \
-  --arg EchoBotStatusUpdateSubscribe "$EchoBotStatusUpdateSubscribe" \
-  --arg EchoBotStatusGetSubscribe "$EchoBotStatusGetSubscribe" \
-  --arg EchoBotDetectionsPublish "$EchoBotDetectionsPublish" \
-  --arg EchoBotStatusUpdatePublish "$EchoBotStatusUpdatePublish" \
-  --arg EchoBotStatusGetPublish "$EchoBotStatusGetPublish" \
-'{ "RecipeFormatVersion": "2020-01-25", 
-"ComponentName": $component_name, 
-"ComponentVersion": $component_version, 
-"ComponentDescription": "A component that enables control of EchoBot through shadow updates", 
-"ComponentPublisher": "Azer",
-"ComponentConfiguration": {
-    "DefaultConfiguration": {
-      "accessControl": {   
-            "aws.greengrass.ipc.pubsub": {
-                "<component_name>:pubsub:1": {
-                    "policyDescription": "Allows access to publish/subscribe to all topics.",
-                    "operations": [
-                        "aws.greengrass#PublishToTopic",
-                        "aws.greengrass#SubscribeToTopic"
-                    ],
-                    "resources": [
-                        $EchoBotStatusUpdateSubscribe,
-                        $EchoBotStatusGetSubscribe,
-                        $EchoBotDetectionsPublish,
-                        $EchoBotStatusUpdatePublish,
-                        $EchoBotStatusGetPublish
-                    ]
+    uri=s3://$artifact_bucket_name/artifacts/$component_name/$component_version/$component_name.zip
+    script="python3 -m pip install awsiotsdk; python3 -u {artifacts:decompressedPath}/$component_name/echobot.py"
+    EchoBotStatusUpdateSubscribe="\$aws/things/$corename/shadow/update/delta"
+    EchoBotStatusGetSubscribe="\$aws/things/$corename/shadow/get/delta"
+    EchoBotDetectionsPublish="dt/echobot/$corename/detection"
+    EchoBotStatusUpdatePublish="\$aws/things/$corename/shadow/updateelta"
+    EchoBotStatusGetPublish="\$aws/things/$corename/shadow/get"
+    json=$(jq --null-input \
+    --arg component_name "$component_name" \
+    --arg component_version "$component_version" \
+    --arg script "$script" \
+    --arg uri "$uri" \
+    --arg EchoBotStatusUpdateSubscribe "$EchoBotStatusUpdateSubscribe" \
+    --arg EchoBotStatusGetSubscribe "$EchoBotStatusGetSubscribe" \
+    --arg EchoBotDetectionsPublish "$EchoBotDetectionsPublish" \
+    --arg EchoBotStatusUpdatePublish "$EchoBotStatusUpdatePublish" \
+    --arg EchoBotStatusGetPublish "$EchoBotStatusGetPublish" \
+    '{ "RecipeFormatVersion": "2020-01-25", 
+    "ComponentName": $component_name, 
+    "ComponentVersion": $component_version, 
+    "ComponentDescription": "A component that enables control of EchoBot through shadow updates", 
+    "ComponentPublisher": "Azer",
+    "ComponentConfiguration": {
+        "DefaultConfiguration": {
+        "accessControl": {   
+                "aws.greengrass.ipc.pubsub": {
+                    "<component_name>:pubsub:1": {
+                        "policyDescription": "Allows access to publish/subscribe to all topics.",
+                        "operations": [
+                            "aws.greengrass#PublishToTopic",
+                            "aws.greengrass#SubscribeToTopic"
+                        ],
+                        "resources": [
+                            $EchoBotStatusUpdateSubscribe,
+                            $EchoBotStatusGetSubscribe,
+                            $EchoBotDetectionsPublish,
+                            $EchoBotStatusUpdatePublish,
+                            $EchoBotStatusGetPublish
+                        ]
+                    }
                 }
             }
         },
-        "EchoBotStatusUpdateSubscribe" = $EchoBotStatusUpdateSubscribe,
-        "EchoBotStatusGetSubscribe" = $EchoBotStatusGetSubscribe,
-        "EchoBotDetectionsPublish" = $EchoBotDetectionsPublish,
-        "EchoBotStatusUpdatePublish" = $EchoBotStatusUpdatePublish,
-        "EchoBotStatusGetPublish" = $EchoBotStatusGetPublish
-    }
-},
-"Manifests": [ { "Platform": { "os": "linux" }, 
-"Lifecycle": { "RequiresPrivilege": false, "Run": $script }, 
-"Artifacts": [ { "URI": $uri, 
-"Unarchive": "ZIP", "Permission": { "Read": "ALL", "Execute": "NONE" } } ] } ] }')
+        "EchoBotStatusUpdateSubscribe": $EchoBotStatusUpdateSubscribe,
+        "EchoBotStatusGetSubscribe": $EchoBotStatusGetSubscribe,
+        "EchoBotDetectionsPublish": $EchoBotDetectionsPublish,
+        "EchoBotStatusUpdatePublish": $EchoBotStatusUpdatePublish,
+        "EchoBotStatusGetPublish": $EchoBotStatusGetPublish
+    },
+    "Manifests": [ { "Platform": { "os": "linux" }, 
+    "Lifecycle": { "RequiresPrivilege": false, "Run": $script }, 
+    "Artifacts": [ { "URI": $uri, 
+    "Unarchive": "ZIP", "Permission": { "Read": "ALL", "Execute": "NONE" } } ] } ] }')
 
 # Create recipe file and component in Greengrass
 echo ${json//<component_name>/$component_name} > ~/GreengrassCore/recipes/$component_name-$component_version.json

@@ -79,7 +79,7 @@ def report_detections(blocked, detectioncount, following):
         "speed": speed,
         "mode": mode
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(EchoBotDetectionsPublish, json.dumps(message)
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotDetectionsPublish, json.dumps(message)
 
 def update_mode(currentmode):
     # Update shadow with current state
@@ -94,7 +94,7 @@ def update_mode(currentmode):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(EchoBotStatusUpdatePublish, json.dumps(message)
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message)
 
 
 def update_speed(currentspeed):
@@ -112,7 +112,7 @@ def update_speed(currentspeed):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(EchoBotStatusUpdatePublish, json.dumps(message)
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message)
    
 
 def update_command(currentcommand):
@@ -125,7 +125,7 @@ def update_command(currentcommand):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(EchoBotStatusUpdatePublish, json.dumps(message)
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message)
 
 
 def update_status(status):
@@ -143,7 +143,7 @@ def update_status(status):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(EchoBotStatusUpdatePublish, json.dumps(message)
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message)
 
   
     
@@ -306,15 +306,15 @@ def set_configuration(config):
     """
     new_config = {}
     if "EchoBotStatusUpdateSubscribe" in config:
-        config_utils.TOPIC = config["EchoBotStatusUpdateSubscribe"]
+        config_utils.EchoBotStatusUpdateSubscribe = config["EchoBotStatusUpdateSubscribe"]
     elif "EchoBotStatusGetSubscribe" in config:
-        config_utils.TOPIC = config["EchoBotStatusGetSubscribe"]
+        config_utils.EchoBotStatusGetSubscribe = config["EchoBotStatusGetSubscribe"]
     elif "EchoBotDetectionsPublish" in config:
-        config_utils.TOPIC = config["EchoBotDetectionsPublish"]
+        config_utils.EchoBotDetectionsPublish = config["EchoBotDetectionsPublish"]
     elif "EchoBotStatusUpdatePublish" in config:
-        config_utils.TOPIC = config["EchoBotStatusUpdatePublish"]
+        config_utils.EchoBotStatusUpdatePublish = config["EchoBotStatusUpdatePublish"]
     elif "EchoBotStatusGetPublish" in config:
-        config_utils.TOPIC = config["EchoBotStatusGetPublish"]
+        config_utils.EchoBotStatusGetPublish = config["EchoBotStatusGetPublish"]
       
 set_configuration(ipc_utils.IPCUtils().get_configuration())        
 
@@ -368,7 +368,7 @@ time.sleep(2)
 update_status("Ready for commands")
 
 # Get current shadow
-ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(EchoBotStatusGetPublish, "")
+ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusGetPublish, "")
 
 while True:
     time.sleep(5)

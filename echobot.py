@@ -4,15 +4,11 @@ import config_utils
 import time
 import json
 from socket import socket, AF_INET, SOCK_DGRAM, IPPROTO_UDP, timeout
-config_utils.logger.info("Loading numpy")
+import socket
 import numpy as np
-config_utils.logger.info("cv2")
 import cv2
-config_utils.logger.info("torch")
 import torch
-config_utils.logger.info("torch vision")
 import torchvision
-config_utils.logger.info("functional")
 import torch.nn.functional as F
 import datetime
 import os

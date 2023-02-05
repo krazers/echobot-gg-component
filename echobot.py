@@ -334,6 +334,7 @@ def set_configuration(config):
     Sets a new config object with the combination of updated and default configuration as applicable.
     Calls inference code with the new config and indicates that the configuration changed.
     """
+    print(config)
     new_config = {}
     if "EchoBotStatusUpdateSubscribe" in config:
         config_utils.EchoBotStatusUpdateSubscribe = config["EchoBotStatusUpdateSubscribe"]

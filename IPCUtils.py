@@ -68,7 +68,7 @@ class IPCUtils:
             config_utils.logger.info("Publishing results to the IoT core...")
             operation.get_response().result(config_utils.TIMEOUT)
         except Exception as e:
-            config_utils.logger.error("Exception occured during publish: {}".format(e))
+            config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
 
     def publish_results_to_pubsub_ipc(self, topic, PAYLOAD):
         r"""
@@ -89,7 +89,7 @@ class IPCUtils:
             future = operation.get_response()
             future.result(config_utils.TIMEOUT)
         except Exception as e:
-            config_utils.logger.error("Exception occured during publish: {}".format(e))
+            config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
 
     def subscribe_to_cloud(self, topic, streamhandler):
         config_utils.logger.error("Subscribed to Topic: {}".format(topic))
@@ -114,7 +114,7 @@ class IPCUtils:
             return result.value
         except Exception as e:
             config_utils.logger.error(
-                "Exception occured during fetching the configuration: {}".format(e)
+                "Exception occured during fetching the configuration: {}".format(str(e))
             )
             exit(1)
     
@@ -135,7 +135,7 @@ class IPCUtils:
             
         except Exception as e:
             config_utils.logger.error(
-                "Exception occured during fetching of shadow: {}".format(e)
+                "Exception occured during fetching of shadow: {}".format(str(e))
             )
     
     def sample_update_thing_shadow_request(thingName, shadowName, payload):
@@ -156,7 +156,7 @@ class IPCUtils:
             
         except Exception as e:
             config_utils.logger.error(
-                "Exception occured while updating shadow: {}".format(e)
+                "Exception occured while updating shadow: {}".format(str(e))
             )
 
 
@@ -166,6 +166,6 @@ try:
     config_utils.logger.info("Created IPC client...")
 except Exception as e:
     config_utils.logger.error(
-        "Exception occured during the creation of an IPC client: {}".format(e)
+        "Exception occured during the creation of an IPC client: {}".format(str(e))
     )
     exit(1)

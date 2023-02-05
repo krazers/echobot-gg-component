@@ -124,6 +124,7 @@ def update_mode(currentmode):
             }
         }
     }
+    print(config_utils.EchoBotStatusUpdatePublish)
     ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
 
 
@@ -334,7 +335,6 @@ def set_configuration(config):
     Sets a new config object with the combination of updated and default configuration as applicable.
     Calls inference code with the new config and indicates that the configuration changed.
     """
-    print(config)
     new_config = {}
     if "EchoBotStatusUpdateSubscribe" in config:
         config_utils.EchoBotStatusUpdateSubscribe = config["EchoBotStatusUpdateSubscribe"]

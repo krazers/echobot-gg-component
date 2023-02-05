@@ -76,20 +76,20 @@ class IPCUtils:
         IPC Pubsub
         :param PAYLOAD: An dictionary object with inference results.
         """
-        #try:
-        request = PublishToTopicRequest()
-        request.topic = topic
-        publish_message = PublishMessage()
-        publish_message.json_message = JsonMessage()
-        publish_message.json_message.message = PAYLOAD
-        request.publish_message = publish_message
-        operation = ipc_client.new_publish_to_topic()
-        config_utils.logger.info("Publishing results to the Greengrass IPC Pubsub...")
-        operation.activate(request)
-        future = operation.get_response()
-        future.result(config_utils.TIMEOUT)
-        #except Exception as e:
-        #    config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
+        try:
+            request = PublishToTopicRequest()
+            request.topic = topic
+            publish_message = PublishMessage()
+            publish_message.json_message = JsonMessage()
+            publish_message.json_message.message = PAYLOAD
+            request.publish_message = publish_message
+            operation = ipc_client.new_publish_to_topic()
+            config_utils.logger.info("Publishing results to the Greengrass IPC Pubsub...")
+            operation.activate(request)
+            future = operation.get_response()
+            future.result(config_utils.TIMEOUT)
+        except Exception as e:
+            config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
 
     def subscribe_to_cloud(self, topic, streamhandler):
         config_utils.logger.error("Subscribed to Topic: {}".format(topic))

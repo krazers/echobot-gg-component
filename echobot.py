@@ -331,8 +331,7 @@ def stop_object_following():
       
 config_utils.logger.info("Loading recipe parameters...")
 config = ipc_utils.IPCUtils().get_configuration() 
-print(config)
-print(config["EchoBotStatusUpdatePublish"])
+#print(config["EchoBotStatusUpdatePublish"])
 
 config_utils.logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
@@ -379,7 +378,7 @@ time.sleep(2)
 update_status("Ready for commands")
 
 # Get current shadow
-ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusGetPublish"], "")
+ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusGetPublish"], "{}")
 
 while True:
     time.sleep(5)

@@ -68,6 +68,7 @@ class IPCUtils:
             config_utils.logger.info("Publishing results to the IoT core...")
             operation.get_response().result(config_utils.TIMEOUT)
         except Exception as e:
+            config_utils.logger.error(str(e))
             config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
 
     def publish_results_to_pubsub_ipc(self, topic, PAYLOAD):

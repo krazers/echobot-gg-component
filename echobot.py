@@ -142,7 +142,7 @@ def update_speed(currentspeed):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], message)
+    ipc_utils.IPCUtils().publish_results_to_cloud(config["EchoBotStatusUpdatePublish"], message)
    
 
 def update_command(currentcommand):

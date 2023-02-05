@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from json import dumps
+from json import dumps, loads
 from os import getenv
 
 import awsiot.greengrasscoreipc.client as client
@@ -112,7 +112,7 @@ class IPCUtils:
             operation = ipc_client.new_get_configuration()
             operation.activate(request).result(config_utils.TIMEOUT)
             result = operation.get_response().result(config_utils.TIMEOUT)
-            return json.loads(result.value)
+            return loads(result.value)
         except Exception as e:
             config_utils.logger.error(
                 "Exception occured during fetching the configuration: {}".format(str(e))

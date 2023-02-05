@@ -316,9 +316,11 @@ def set_configuration(config):
     elif "EchoBotStatusGetPublish" in config:
         config_utils.EchoBotStatusGetPublish = config["EchoBotStatusGetPublish"]
       
+print("Loading recipe parameters...")
 set_configuration(ipc_utils.IPCUtils().get_configuration())        
 
 # Configure logging
+print("Configuring Logger...")
 logger = logging.getLogger("EchoBot")
 logger.setLevel(logging.DEBUG)
 streamHandler = logging.StreamHandler()
@@ -327,6 +329,7 @@ streamHandler.setFormatter(formatter)
 logger.addHandler(streamHandler)
 
 
+print("Startup, updating mode and speed shadow")
 mode = "stop"
 update_mode("stop")
 update_speed(speed)
@@ -336,6 +339,7 @@ from jetbot import ObjectDetector
 
 ######## Later this can be downloaded form another component
 ##############################################################
+print("Loading coco model...")
 model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
 from jetbot import bgr8_to_jpeg
 print("Loading camera")
@@ -345,6 +349,7 @@ camera = Camera.instance(width=300, height=300)
 from jetbot import Robot
 
 # Initialize robot
+print("Initialize robot library")
 robot = Robot()
 
 print("Loading model")

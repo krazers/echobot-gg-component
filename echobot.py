@@ -109,7 +109,7 @@ def report_detections(blocked, detectioncount, following):
         "speed": speed,
         "mode": mode
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotDetectionsPublish"], json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotDetectionsPublish"], message)
 
 def update_mode(currentmode):
     # Update shadow with current state
@@ -124,7 +124,7 @@ def update_mode(currentmode):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], message)
 
 
 def update_speed(currentspeed):
@@ -142,7 +142,7 @@ def update_speed(currentspeed):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], message)
    
 
 def update_command(currentcommand):
@@ -155,7 +155,7 @@ def update_command(currentcommand):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], message)
 
 
 def update_status(status):
@@ -173,7 +173,7 @@ def update_status(status):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], message)
 
   
     

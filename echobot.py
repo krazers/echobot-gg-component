@@ -333,6 +333,7 @@ def stop_object_following():
 config_utils.logger.info("Loading recipe parameters...")
 config = ipc_utils.IPCUtils().get_configuration() 
 
+
 config_utils.logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
 update_mode("stop")

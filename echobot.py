@@ -109,7 +109,7 @@ def report_detections(blocked, detectioncount, following):
         "speed": speed,
         "mode": mode
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotDetectionsPublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotDetectionsPublish"], json.dumps(message))
 
 def update_mode(currentmode):
     # Update shadow with current state
@@ -124,8 +124,8 @@ def update_mode(currentmode):
             }
         }
     }
-    print(config_utils.EchoBotStatusUpdatePublish)
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    print(config["EchoBotStatusUpdatePublish"])
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
 
 
 def update_speed(currentspeed):
@@ -143,7 +143,7 @@ def update_speed(currentspeed):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
    
 
 def update_command(currentcommand):
@@ -156,7 +156,7 @@ def update_command(currentcommand):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
 
 
 def update_status(status):
@@ -174,7 +174,7 @@ def update_status(status):
             }
         }
     }
-    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusUpdatePublish, json.dumps(message))
+    ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusUpdatePublish"], json.dumps(message))
 
   
     
@@ -329,26 +329,9 @@ def stop_object_following():
     time.sleep(1.0)
     robot.stop()
     config_utils.logger.info("EchoBot stopped")
-    
-def set_configuration(config):
-    r"""
-    Sets a new config object with the combination of updated and default configuration as applicable.
-    Calls inference code with the new config and indicates that the configuration changed.
-    """
-    new_config = {}
-    if "EchoBotStatusUpdateSubscribe" in config:
-        config_utils.EchoBotStatusUpdateSubscribe = config["EchoBotStatusUpdateSubscribe"]
-    elif "EchoBotStatusGetSubscribe" in config:
-        config_utils.EchoBotStatusGetSubscribe = config["EchoBotStatusGetSubscribe"]
-    elif "EchoBotDetectionsPublish" in config:
-        config_utils.EchoBotDetectionsPublish = config["EchoBotDetectionsPublish"]
-    elif "EchoBotStatusUpdatePublish" in config:
-        config_utils.EchoBotStatusUpdatePublish = config["EchoBotStatusUpdatePublish"]
-    elif "EchoBotStatusGetPublish" in config:
-        config_utils.EchoBotStatusGetPublish = config["EchoBotStatusGetPublish"]
       
 config_utils.logger.info("Loading recipe parameters...")
-set_configuration(ipc_utils.IPCUtils().get_configuration())        
+config = ipc_utils.IPCUtils().get_configuration() 
 
 config_utils.logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
@@ -388,14 +371,14 @@ stdev = 255.0 * np.array([0.229, 0.224, 0.225])
 normalize = torchvision.transforms.Normalize(mean, stdev)
 
 # Subscribe to shadow topics
-ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusUpdateSubscribe, UpdatedShadowStreamHandler())
+ipc_utils.IPCUtils().subscribe_to_topic(config["EchoBotStatusUpdateSubscribe"], UpdatedShadowStreamHandler())
 time.sleep(2)
-ipc_utils.IPCUtils().subscribe_to_topic(config_utils.EchoBotStatusGetSubscribe, GetShadowStreamHandler())
+ipc_utils.IPCUtils().subscribe_to_topic(config["EchoBotStatusGetSubscribe"], GetShadowStreamHandler())
 time.sleep(2)
 update_status("Ready for commands")
 
 # Get current shadow
-ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config_utils.EchoBotStatusGetPublish, "")
+ipc_utils.IPCUtils().publish_results_to_pubsub_ipc(config["EchoBotStatusGetPublish"], "")
 
 while True:
     time.sleep(5)

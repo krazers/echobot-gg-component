@@ -15,13 +15,6 @@ QOS_TYPE = QOS.AT_LEAST_ONCE
 TIMEOUT = 10
 SCORE_CONVERTER = 255
 
-#Topics
-EchoBotStatusUpdateSubscribe = ""
-EchoBotStatusGetSubscribe = ""
-EchoBotDetectionsPublish = ""
-EchoBotStatusUpdatePublish = ""
-EchoBotStatusGetPublish = ""
-
 # Get a logger
 logger = getLogger()
 logger.setLevel(INFO)

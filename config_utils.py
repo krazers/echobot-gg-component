@@ -25,6 +25,4 @@ EchoBotStatusGetPublish = ""
 logger = getLogger()
 handler = StreamHandler(stdout)
 logger.setLevel(INFO)
-formatter = logger.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
 logger.addHandler(handler)

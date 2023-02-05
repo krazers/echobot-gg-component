@@ -8,9 +8,9 @@ import config_utils
 from awsiot.greengrasscoreipc.clientv2 import GreengrassCoreIPCClientV2
 from awsiot.greengrasscoreipc.model import (
     PublishMessage,
-    BinaryMessage
+    BinaryMessage,
     SubscriptionResponseMessage,
-    UnauthorizedError
+    UnauthorizedError,
     GetConfigurationRequest
 )
 

@@ -49,7 +49,7 @@ touch ~/GreengrassCore/recipes/$component_name-$component_version.json
     EchoBotStatusUpdateSubscribe="\aws$/things/$corename/shadow/update/delta"
     EchoBotStatusGetSubscribe="\aws$/things/$corename/shadow/get/delta"
     EchoBotDetectionsPublish="dt/echobot/$corename/detection"
-    EchoBotStatusUpdatePublish="\aws$/things/$corename/shadow/update/delta"
+    EchoBotStatusUpdatePublish="\aws$/things/$corename/shadow/update"
     EchoBotStatusGetPublish="\aws$/things/$corename/shadow/get"
     json=$(jq --null-input \
     --arg component_name "$component_name" \
@@ -69,12 +69,12 @@ touch ~/GreengrassCore/recipes/$component_name-$component_version.json
     "ComponentConfiguration": {
         "DefaultConfiguration": {
         "accessControl": {   
-                "aws.greengrass.ipc.pubsub": {
-                    "<component_name>:pubsub:1": {
+                "aws.greengrass.ipc.mqttproxy": {
+                    "<component_name>:mqttproxy:1": {
                         "policyDescription": "Allows access to publish/subscribe to all topics.",
                         "operations": [
-                            "aws.greengrass#PublishToTopic",
-                            "aws.greengrass#SubscribeToTopic"
+                            "aws.greengrass#PublishToIoTCore",
+                            "aws.greengrass#SubscribeToIoTCore"
                         ],
                         "resources": [
                             $EchoBotStatusUpdateSubscribe,

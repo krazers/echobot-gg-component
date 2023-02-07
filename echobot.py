@@ -387,7 +387,7 @@ time.sleep(2)
 update_status("Ready for commands")
 
 # Get current shadow
-ipc_utils.IPCUtils().publish_results_to_cloud(config["EchoBotStatusGetPublish"], "{}")
+ipc_utils.IPCUtils().publish_results_to_cloud(config["EchoBotStatusGetPublish"], "")
 
 while True:
     time.sleep(5)

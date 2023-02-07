@@ -30,9 +30,10 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logger.setLevel(DEBUG)
-
+logger.setLevel(INFO)
+print("Hi message")
 logger.info("Libraries loaded")
+print("Hi message")
 
 # Global variables
 speed = 0.4 #normal

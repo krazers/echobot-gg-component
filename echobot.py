@@ -1,7 +1,6 @@
 #!/usr/bin/python3.6
 from logging import INFO, DEBUG, StreamHandler, getLogger
 import IPCUtils as ipc_utils
-import config_utils
 import time
 import json
 from socket import socket, AF_INET, SOCK_DGRAM, IPPROTO_UDP, timeout
@@ -30,7 +29,7 @@ from awsiot.greengrasscoreipc.model import (
 )
 
 # Get a logger
-logger = getLogger("EchoBot")
+logger = getLogger()
 logger.setLevel(DEBUG)
 
 logger.info("Libraries loaded")

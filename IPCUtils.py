@@ -6,7 +6,6 @@ from os import getenv
 from logging import INFO, DEBUG, StreamHandler, getLogger
 
 import awsiot.greengrasscoreipc.client as client
-import config_utils
 
 from awscrt.io import (
     ClientBootstrap,
@@ -31,8 +30,11 @@ from awsiot.greengrasscoreipc.model import (
 )
 
 # Get a logger
-logger = getLogger("EchoBot")
+logger = getLogger()
 logger.setLevel(DEBUG)
+
+TIMEOUT = 15
+QOS_TYPE = QOS.AT_LEAST_ONCE
 
 class IPCUtils:
     def connect(self):
@@ -52,7 +54,7 @@ class IPCUtils:
         )
         self.lifecycle_handler = LifecycleHandler()
         connect_future = connection.connect(self.lifecycle_handler)
-        connect_future.result(config_utils.TIMEOUT)
+        connect_future.result(TIMEOUT)
         return connection
 
     def publish_results_to_cloud(self, topic, PAYLOAD):
@@ -64,13 +66,13 @@ class IPCUtils:
         try:
             request = PublishToIoTCoreRequest(
                 topic_name=topic,
-                qos=config_utils.QOS_TYPE,
+                qos=QOS_TYPE,
                 payload=dumps(PAYLOAD).encode(),
             )
             operation = ipc_client.new_publish_to_iot_core()
-            operation.activate(request).result(config_utils.TIMEOUT)
+            operation.activate(request).result(TIMEOUT)
             logger.info("Publishing results to the IoT core...")
-            operation.get_response().result(config_utils.TIMEOUT)
+            operation.get_response().result(TIMEOUT)
         except Exception as e:
             logger.error(str(e))
             logger.error("Exception occured during publish: {}".format(str(e)))
@@ -92,7 +94,7 @@ class IPCUtils:
             logger.info("Publishing results to the Greengrass IPC Pubsub...")
             operation.activate(request)
             future = operation.get_response()
-            future.result(config_utils.TIMEOUT)
+            future.result(TIMEOUT)
         except Exception as e:
             logger.error("Exception occured during publish: {}".format(str(e)))
 
@@ -109,7 +111,7 @@ class IPCUtils:
             logger.info("4")
             future = operation.activate(request)
             logger.info("5")
-            future.result(config_utils.TIMEOUT)
+            future.result(TIMEOUT)
             logger.info("Subscribed to Topic: {}".format(topic))
         except Exception as e:
             logger.error(
@@ -126,8 +128,8 @@ class IPCUtils:
         try:
             request = GetConfigurationRequest()
             operation = ipc_client.new_get_configuration()
-            operation.activate(request).result(config_utils.TIMEOUT)
-            result = operation.get_response().result(config_utils.TIMEOUT)
+            operation.activate(request).result(TIMEOUT)
+            result = operation.get_response().result(TIMEOUT)
             return result.value
         except Exception as e:
             logger.error(
@@ -147,7 +149,7 @@ class IPCUtils:
             op.activate(get_thing_shadow_request)
             fut = op.get_response()
             
-            result = fut.result(config_utils.TIMEOUT)
+            result = fut.result(TIMEOUT)
             return result.payload
             
         except Exception as e:
@@ -168,7 +170,7 @@ class IPCUtils:
             op.activate(update_thing_shadow_request)
             fut = op.get_response()
             
-            result = fut.result(config_utils.TIMEOUT)
+            result = fut.result(TIMEOUT)
             return result.payload
             
         except Exception as e:

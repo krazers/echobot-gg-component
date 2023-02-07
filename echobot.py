@@ -209,10 +209,11 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
     def on_stream_event(self, event: IoTCoreMessage) -> None:
         global mode
         logger.info(event.message.payload)
-        if("desired" in event.message.payload["state"]):
-            if("mode" in event.message.payload["state"]["desired"]):
-                if(mode != event.message.payload["state"]["desired"]["mode"]):
-                    mode = event.message.payload["state"]["desired"]["mode"]
+        message = json.loads(event.message.payload)
+        if("desired" in message["state"]):
+            if("mode" in message["state"]["desired"]):
+                if(mode != message["state"]["desired"]["mode"]):
+                    mode = message["state"]["desired"]["mode"]
                     logger.info("Current mode is {}".format(mode))
                     if(mode == "stop"):
                         stop_object_following()
@@ -238,9 +239,10 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
     def on_stream_event(self, event: IoTCoreMessage) -> None:
         global mode    
         logger.info(event.message.payload)
-        if("mode" in event.message.payload["state"]):
-            if(mode != event.message.payload["state"]["mode"]):
-                mode = event.message.payload["state"]["mode"]
+        message = json.loads(event.message.payload)
+        if("mode" in message["state"]):
+            if(mode != message["state"]["mode"]):
+                mode = message["state"]["mode"]
                 logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
                     stop_object_following()
@@ -248,10 +250,10 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                     start_object_following()
                 elif(mode == "avoidobstacles"):
                     start_avoid_obstacles()
-        if("speed" in event.message.payload["state"]):
-            update_speed(float(event.message.payload["state"]["speed"]))
-        if("command" in event.message.payload["state"]):
-            update_command(event.message.payload["state"]["command"])
+        if("speed" in message["state"]):
+            update_speed(float(message["state"]["speed"]))
+        if("command" in message["state"]):
+            update_command(message["state"]["command"])
 
     def on_stream_error(self, error: Exception) -> bool:
         logger.error("Exception on UpdateShadow Stream Handler: {}".format(error))

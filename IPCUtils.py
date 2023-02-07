@@ -27,7 +27,8 @@ from awsiot.greengrasscoreipc.model import (
     GetThingShadowRequest,
     UpdateThingShadowRequest,
     SubscribeToTopicRequest,
-    SubscriptionResponseMessage
+    SubscriptionResponseMessage,
+    SubscribeToIoTCoreRequest
 )
 
 # Get a logger
@@ -103,7 +104,7 @@ class IPCUtils:
     def subscribe_to_cloud(self, topic, streamhandler):
         try:
             logger.info("Subscribing to Topic: {}".format(topic))
-            request = SubscribeToTopicRequest()
+            request = SubscribeToIoTCoreRequest()
             request.topic_name = topic
             handler = streamhandler
             operation = ipc_client.new_subscribe_to_iot_core(handler) 

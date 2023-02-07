@@ -1,6 +1,7 @@
 #!/usr/bin/python3.6
 from logging import INFO, DEBUG, StreamHandler, getLogger
 import IPCUtils as ipc_utils
+import sys
 import time
 import json
 from socket import socket, AF_INET, SOCK_DGRAM, IPPROTO_UDP, timeout
@@ -30,10 +31,8 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logger.setLevel(INFO)
-print("Hi message")
+logging.basicConfig(stream=sys.stdout, level=INFO)
 logger.info("Libraries loaded")
-print("Hi message")
 
 # Global variables
 speed = 0.4 #normal

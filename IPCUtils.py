@@ -4,6 +4,7 @@
 from json import dumps, loads
 from os import getenv
 from logging import INFO, DEBUG, StreamHandler, getLogger
+import sys
 
 import awsiot.greengrasscoreipc.client as client
 
@@ -31,7 +32,7 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logger.setLevel(DEBUG)
+logging.basicConfig(stream=sys.stdout, level=INFO)
 
 TIMEOUT = 15
 QOS_TYPE = QOS.AT_LEAST_ONCE

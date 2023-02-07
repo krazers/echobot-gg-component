@@ -32,7 +32,7 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.addHandler(logger.StreamHandler(sys.stdout))
 logger.setLevel(INFO)
 
 TIMEOUT = 15

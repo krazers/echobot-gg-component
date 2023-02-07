@@ -124,30 +124,15 @@ class IPCUtils:
         except Exception as e:
             logger.error("Exception occured during publish: {}".format(str(e)))
 
-    def subscribe_to_cloud(self, topic, streamhandler):
-        try:
-            logger.info("Subscribing to Topic: {}".format(topic))
-            request = SubscribeToIoTCoreRequest()
-            request.topic_name = topic
-            request.qos = QOS_TYPE
-            handler = streamhandler
-            operation = ipc_client.new_subscribe_to_iot_core(handler) 
-            future = operation.activate(request)
-            future.result(TIMEOUT)
-            logger.info("Subscribed to Topic: {}".format(topic))
-        except Exception as e:
-            logger.error(
-                "Exception occured during subscription: {}".format(str(e))
-            )
-            exit(1)
-
-    def subscribe_to_cloud_test(self, topic):
+    def subscribe_to_cloud(self, topic, messagetype):
         try:
             logger.info("Subscribing to Topic: {}".format(topic))
             request = SubscribeToIoTCoreRequest()
             request.topic_name = topic
             request.qos = QOS_TYPE
             handler = UpdatedShadowStreamHandler()
+            if(messagetype == 2):
+                handler = GetShadowStreamHandler()            
             operation = ipc_client.new_subscribe_to_iot_core(handler) 
             future = operation.activate(request)
             future.result(TIMEOUT)
@@ -567,9 +552,9 @@ normalize = torchvision.transforms.Normalize(mean, stdev)
 ##############################################################
 ## Subscribe to topics to receive commands
 ##############################################################
-IPCUtils().subscribe_to_cloud(config["EchoBotStatusUpdateSubscribe"], UpdatedShadowStreamHandler())
+IPCUtils().subscribe_to_cloud(config["EchoBotStatusUpdateSubscribe"], 1)
 time.sleep(2)
-IPCUtils().subscribe_to_cloud(config["EchoBotStatusGetSubscribe"], GetShadowStreamHandler())
+IPCUtils().subscribe_to_cloud(config["EchoBotStatusGetSubscribe"], 2)
 time.sleep(2)
 update_status("Ready for commands")
 

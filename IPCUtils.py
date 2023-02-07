@@ -32,7 +32,7 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logging.basicConfig(stream=sys.stdout, level=DEBUG)
+logging.basicConfig(stream=sys.stdout, level=INFO)
 
 
 TIMEOUT = 15
@@ -104,15 +104,10 @@ class IPCUtils:
         try:
             logger.info("Subscribing to Topic: {}".format(topic))
             request = SubscribeToTopicRequest()
-            logger.info("1")
             request.topic_name = topic
-            logger.info("2")
             handler = streamhandler
-            logger.info("3")
-            operation = ipc_client.new_subscribe_to_topic(handler) 
-            logger.info("4")
+            operation = ipc_client.new_subscribe_to_iot_core(handler) 
             future = operation.activate(request)
-            logger.info("5")
             future.result(TIMEOUT)
             logger.info("Subscribed to Topic: {}".format(topic))
         except Exception as e:

@@ -94,11 +94,17 @@ class IPCUtils:
 
     def subscribe_to_cloud(self, topic, streamhandler):
         try:
+            config_utils.logger.info("Subscribing to Topic: {}".format(topic))
             request = SubscribeToTopicRequest()
+            config_utils.logger.info("1")
             request.topic_name = topic
+            config_utils.logger.info("2")
             handler = streamhandler
+            config_utils.logger.info("3")
             operation = ipc_client.new_subscribe_to_topic(handler) 
+            config_utils.logger.info("4")
             future = operation.activate(request)
+            config_utils.logger.info("5")
             future.result(config_utils.TIMEOUT)
             config_utils.logger.info("Subscribed to Topic: {}".format(topic))
         except Exception as e:

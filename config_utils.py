@@ -17,4 +17,4 @@ SCORE_CONVERTER = 255
 
 # Get a logger
 logger = getLogger()
-logger.setLevel(INFO)
+logger.setLevel(DEBUG)

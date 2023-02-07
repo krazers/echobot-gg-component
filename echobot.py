@@ -31,7 +31,8 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logger.basicConfig(stream=sys.stdout, level=INFO)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.setLevel(INFO)
 logger.info("Libraries loaded")
 
 # Global variables

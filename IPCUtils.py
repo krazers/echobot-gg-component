@@ -32,7 +32,7 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logging.basicConfig(stream=sys.stdout, level=INFO)
+logger.basicConfig(stream=sys.stdout, level=INFO)
 
 TIMEOUT = 15
 QOS_TYPE = QOS.AT_LEAST_ONCE

@@ -64,7 +64,7 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
 
     def on_stream_error(self, error: Exception) -> bool:
         # Handle error.
-        config_utils.logger.info("Exception on GetShadow Stream Handler: {}".format(error))
+        config_utils.logger.error("Exception on GetShadow Stream Handler: {}".format(error))
         return True  # Return True to close stream, False to keep stream open.
 
     def on_stream_closed(self) -> None:
@@ -95,7 +95,7 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
             update_command(event.message.payload["state"]["command"])
 
     def on_stream_error(self, error: Exception) -> bool:
-        config_utils.logger.info("Exception on UpdateShadow Stream Handler: {}".format(error))
+        config_utils.logger.error("Exception on UpdateShadow Stream Handler: {}".format(error))
         return True  # Return True to close stream, False to keep stream open.
 
     def on_stream_closed(self) -> None:

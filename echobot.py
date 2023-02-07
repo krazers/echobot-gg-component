@@ -42,17 +42,17 @@ coreInfo = None
 filespath = "/echobot/"
 null = None
 
-class GetShadowStreamHandler(client.SubscribeToTopicStreamHandler):
+class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
     def __init__(self):
         super().__init__()
 
-    def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
+    def on_stream_event(self, event: IoTCoreMessage) -> None:
         global mode
-        config_utils.logger.info(event.jsonMessage.message)
-        if("desired" in event.jsonMessage.message["state"]):
-            if("mode" in event.jsonMessage.message["state"]["desired"]):
-                if(mode != event.jsonMessage.message["state"]["desired"]["mode"]):
-                    mode = event.jsonMessage.message["state"]["desired"]["mode"]
+        config_utils.logger.info(event.message.payload)
+        if("desired" in event.message.payload["state"]):
+            if("mode" in event.message.payload["state"]["desired"]):
+                if(mode != event.message.payload["state"]["desired"]["mode"]):
+                    mode = event.message.payload["state"]["desired"]["mode"]
                     config_utils.logger.info("Current mode is {}".format(mode))
                     if(mode == "stop"):
                         stop_object_following()
@@ -71,16 +71,16 @@ class GetShadowStreamHandler(client.SubscribeToTopicStreamHandler):
         pass
 
 
-class UpdatedShadowStreamHandler(client.SubscribeToTopicStreamHandler):
+class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
     def __init__(self):
         super().__init__()
 
-    def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
+    def on_stream_event(self, event: IoTCoreMessage) -> None:
         global mode    
-        config_utils.logger.info(event.jsonMessage.message)
-        if("mode" in event.jsonMessage.message["state"]):
-            if(mode != event.jsonMessage.message["state"]["mode"]):
-                mode = event.jsonMessage.message["state"]["mode"]
+        config_utils.logger.info(event.message.payload)
+        if("mode" in event.message.payload["state"]):
+            if(mode != event.message.payload["state"]["mode"]):
+                mode = event.message.payload["state"]["mode"]
                 config_utils.logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
                     stop_object_following()
@@ -88,10 +88,10 @@ class UpdatedShadowStreamHandler(client.SubscribeToTopicStreamHandler):
                     start_object_following()
                 elif(mode == "avoidobstacles"):
                     start_avoid_obstacles()
-        if("speed" in event.jsonMessage.message["state"]):
-            update_speed(float(event.jsonMessage.message["state"]["speed"]))
-        if("command" in event.jsonMessage.message["state"]):
-            update_command(event.jsonMessage.message["state"]["command"])
+        if("speed" in event.message.payload["state"]):
+            update_speed(float(event.message.payload["state"]["speed"]))
+        if("command" in event.message.payload["state"]):
+            update_command(event.message.payload["state"]["command"])
 
     def on_stream_error(self, error: Exception) -> bool:
         config_utils.logger.info("Exception on UpdateShadow Stream Handler: {}".format(error))
@@ -374,7 +374,7 @@ stdev = 255.0 * np.array([0.229, 0.224, 0.225])
 normalize = torchvision.transforms.Normalize(mean, stdev)
 
 # Subscribe to shadow topics
-ipc_utils.IPCUtils().subscribe_to_cloud_test(config["EchoBotStatusUpdateSubscribe"])
+ipc_utils.IPCUtils().subscribe_to_cloud(config["EchoBotStatusUpdateSubscribe"], UpdatedShadowStreamHandler())
 time.sleep(2)
 ipc_utils.IPCUtils().subscribe_to_cloud(config["EchoBotStatusGetSubscribe"], GetShadowStreamHandler())
 time.sleep(2)

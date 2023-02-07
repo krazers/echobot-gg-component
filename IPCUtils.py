@@ -17,6 +17,7 @@ from awscrt.io import (
 )
 from awsiot.eventstreamrpc import Connection, LifecycleHandler, MessageAmendment
 from awsiot.greengrasscoreipc.model import (
+    IoTCoreMessage,
     QOS,
     ConfigurationUpdateEvents,
     GetConfigurationRequest,
@@ -118,6 +119,23 @@ class IPCUtils:
             )
             exit(1)
 
+    def subscribe_to_cloud_test(self, topic):
+        try:
+            logger.info("Subscribing to Topic: {}".format(topic))
+            request = SubscribeToIoTCoreRequest()
+            request.topic_name = topic
+            request.qos = QOS_TYPE
+            handler = UpdatedShadowStreamHandler()
+            operation = ipc_client.new_subscribe_to_iot_core(handler) 
+            future = operation.activate(request)
+            future.result(TIMEOUT)
+            logger.info("Subscribed to Topic: {}".format(topic))
+        except Exception as e:
+            logger.error(
+                "Exception occured during subscription: {}".format(str(e))
+            )
+            exit(1)
+
     def get_configuration(self):
         r"""
         Ipc client creates a request and activates the operation to get the configuration of
@@ -177,6 +195,35 @@ class IPCUtils:
                 "Exception occured while updating shadow: {}".format(str(e))
             )
 
+class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
+    def __init__(self):
+        super().__init__()
+
+    def on_stream_event(self, event: IoTCoreMessage) -> None:
+        global mode    
+        logger.info(event.message.payload)
+        if("mode" in event.message.payload["state"]):
+            if(mode != event.message.payload["state"]["mode"]):
+                mode = event.message.payload["state"]["mode"]
+                logger.info("Mode changed to {}".format(mode))
+                if(mode == "stop"):
+                    stop_object_following()
+                elif(mode == "follow"):
+                    start_object_following()
+                elif(mode == "avoidobstacles"):
+                    start_avoid_obstacles()
+        if("speed" in event.message.payload["state"]):
+            update_speed(float(event.message.payload["state"]["speed"]))
+        if("command" in event.message.payload["state"]):
+            update_command(event.message.payload["state"]["command"])
+
+    def on_stream_error(self, error: Exception) -> bool:
+        logger.error("Exception on UpdateShadow Stream Handler: {}".format(error))
+        return True  # Return True to close stream, False to keep stream open.
+
+    def on_stream_closed(self) -> None:
+        # Handle close.
+        pass
 
 # Get the ipc client
 try:

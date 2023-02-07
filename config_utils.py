@@ -1,4 +1,4 @@
-from logging import INFO, StreamHandler, getLogger
+from logging import INFO, DEBUG, StreamHandler, getLogger
 import logging
 from os import environ, path
 from sys import stdout

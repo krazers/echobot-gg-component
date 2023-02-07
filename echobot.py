@@ -1,5 +1,5 @@
 #!/usr/bin/python3.6
-from logging import INFO, DEBUG, StreamHandler, getLogger
+from logging import INFO, DEBUG, StreamHandler, getLogger, basicConfig
 import IPCUtils as ipc_utils
 import sys
 import time
@@ -31,8 +31,7 @@ from awsiot.greengrasscoreipc.model import (
 
 # Get a logger
 logger = getLogger()
-logger.addHandler(logger.StreamHandler(sys.stdout))
-logger.setLevel(INFO)
+logging.basicConfig(stream=sys.stdout, level=DEBUG)
 logger.info("Libraries loaded")
 
 # Global variables

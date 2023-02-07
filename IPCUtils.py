@@ -101,6 +101,15 @@ class IPCUtils:
         future = operation.activate(request)
         future.result(config_utils.TIMEOUT)
 
+    def subscribe_to_cloud_test(self, topic):
+        config_utils.logger.error("Subscribed to Topic: {}".format(topic))
+        request = SubscribeToTopicRequest()
+        request.topic = topic
+        handler = UpdatedShadowStreamHandler()
+        operation = ipc_client.new_subscribe_to_topic(handler) 
+        future = operation.activate(request)
+        future.result(config_utils.TIMEOUT)
+
     def get_configuration(self):
         r"""
         Ipc client creates a request and activates the operation to get the configuration of
@@ -160,6 +169,40 @@ class IPCUtils:
                 "Exception occured while updating shadow: {}".format(str(e))
             )
 
+class UpdatedShadowStreamHandler(client.SubscribeToTopicStreamHandler):
+    def __init__(self):
+        super().__init__()
+
+    def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
+        global mode    
+        config_utils.logger.info(event.jsonMessage.message)
+        if("mode" in event.jsonMessage.message["state"]):
+            if(mode != event.jsonMessage.message["state"]["mode"]):
+                mode = event.jsonMessage.message["state"]["mode"]
+                config_utils.logger.info("Mode changed to {}".format(mode))
+                if(mode == "stop"):
+                    config_utils.logger.info("Stop")
+                    #stop_object_following()
+                elif(mode == "follow"):
+                    config_utils.logger.info("follow")
+                    #start_object_following()
+                elif(mode == "avoidobstacles"):
+                    config_utils.logger.info("avoid")
+                    #start_avoid_obstacles()
+        if("speed" in event.jsonMessage.message["state"]):
+            config_utils.logger.info("speed")
+            #update_speed(float(event.jsonMessage.message["state"]["speed"]))
+        if("command" in event.jsonMessage.message["state"]):
+            config_utils.logger.info("command")
+            #update_command(event.jsonMessage.message["state"]["command"])
+
+    def on_stream_error(self, error: Exception) -> bool:
+        config_utils.logger.info("Exception on UpdateShadow Stream Handler: {}".format(error))
+        return True  # Return True to close stream, False to keep stream open.
+
+    def on_stream_closed(self) -> None:
+        # Handle close.
+        pass
 
 # Get the ipc client
 try:

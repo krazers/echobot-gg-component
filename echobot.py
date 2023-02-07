@@ -1,4 +1,5 @@
 #!/usr/bin/python3.6
+from logging import INFO, DEBUG, StreamHandler, getLogger
 import IPCUtils as ipc_utils
 import config_utils
 import time
@@ -28,7 +29,11 @@ from awsiot.greengrasscoreipc.model import (
     SubscriptionResponseMessage
 )
 
-config_utils.logger.info("Libraries loaded")
+# Get a logger
+logger = getLogger("EchoBot")
+logger.setLevel(DEBUG)
+
+logger.info("Libraries loaded")
 
 # Global variables
 speed = 0.4 #normal
@@ -49,12 +54,12 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
 
     def on_stream_event(self, event: IoTCoreMessage) -> None:
         global mode
-        config_utils.logger.info(event.message.payload)
+        logger.info(event.message.payload)
         if("desired" in event.message.payload["state"]):
             if("mode" in event.message.payload["state"]["desired"]):
                 if(mode != event.message.payload["state"]["desired"]["mode"]):
                     mode = event.message.payload["state"]["desired"]["mode"]
-                    config_utils.logger.info("Current mode is {}".format(mode))
+                    logger.info("Current mode is {}".format(mode))
                     if(mode == "stop"):
                         stop_object_following()
                     elif(mode == "follow"):
@@ -64,7 +69,7 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
 
     def on_stream_error(self, error: Exception) -> bool:
         # Handle error.
-        config_utils.logger.error("Exception on GetShadow Stream Handler: {}".format(error))
+        logger.error("Exception on GetShadow Stream Handler: {}".format(error))
         return True  # Return True to close stream, False to keep stream open.
 
     def on_stream_closed(self) -> None:
@@ -78,11 +83,11 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
 
     def on_stream_event(self, event: IoTCoreMessage) -> None:
         global mode    
-        config_utils.logger.info(event.message.payload)
+        logger.info(event.message.payload)
         if("mode" in event.message.payload["state"]):
             if(mode != event.message.payload["state"]["mode"]):
                 mode = event.message.payload["state"]["mode"]
-                config_utils.logger.info("Mode changed to {}".format(mode))
+                logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
                     stop_object_following()
                 elif(mode == "follow"):
@@ -95,7 +100,7 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
             update_command(event.message.payload["state"]["command"])
 
     def on_stream_error(self, error: Exception) -> bool:
-        config_utils.logger.error("Exception on UpdateShadow Stream Handler: {}".format(error))
+        logger.error("Exception on UpdateShadow Stream Handler: {}".format(error))
         return True  # Return True to close stream, False to keep stream open.
 
     def on_stream_closed(self) -> None:
@@ -312,56 +317,56 @@ def turn_command(command):
         pass
     
 def start_avoid_obstacles():
-    config_utils.logger.info("Starting avoid obstacles routine")
+    logger.info("Starting avoid obstacles routine")
     update_mode("avoidobstacles")
     camera.unobserve_all()
     update({'new': camera.value})
     camera.observe(update, names='value')  
  
 def start_object_following():
-    config_utils.logger.info("Starting object follow routine")
+    logger.info("Starting object follow routine")
     update_mode("follow")
     camera.unobserve_all()
     camera.observe(execute, names='value')
     
 def stop_object_following():
     global robot, camera
-    config_utils.logger.info("Stopping object following routing")
+    logger.info("Stopping object following routing")
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)
     robot.stop()
-    config_utils.logger.info("EchoBot stopped")
+    logger.info("EchoBot stopped")
       
-config_utils.logger.info("Loading recipe parameters...")
+logger.info("Loading recipe parameters...")
 config = ipc_utils.IPCUtils().get_configuration() 
 #print(config["EchoBotStatusUpdatePublish"])
 
-config_utils.logger.info("Startup, updating mode and speed shadow")
+logger.info("Startup, updating mode and speed shadow")
 mode = "stop"
 update_mode("stop")
 update_speed(speed)
-config_utils.logger.info("Loading object detector. This will take a minute...")
+logger.info("Loading object detector. This will take a minute...")
 update_status("Loading object detector")
 from jetbot import ObjectDetector
 
 ######## Later this can be downloaded form another component
 ##############################################################
-config_utils.logger.info("Loading coco model...")
+logger.info("Loading coco model...")
 
 model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
 from jetbot import bgr8_to_jpeg
-config_utils.logger.info("Loading camera")
+logger.info("Loading camera")
 update_status("Loading camera")
 from jetbot import Camera
 camera = Camera.instance(width=300, height=300)
 from jetbot import Robot
 
 # Initialize robot
-config_utils.logger.info("Initialize robot library")
+logger.info("Initialize robot library")
 robot = Robot()
 
-config_utils.logger.info("Loading model")
+logger.info("Loading model")
 collision_model = torchvision.models.alexnet(pretrained=False)
 collision_model.classifier[6] = torch.nn.Linear(collision_model.classifier[6].in_features, 2)
 

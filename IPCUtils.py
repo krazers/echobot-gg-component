@@ -3,6 +3,7 @@
 
 from json import dumps, loads
 from os import getenv
+from logging import INFO, DEBUG, StreamHandler, getLogger
 
 import awsiot.greengrasscoreipc.client as client
 import config_utils
@@ -29,6 +30,9 @@ from awsiot.greengrasscoreipc.model import (
     SubscriptionResponseMessage
 )
 
+# Get a logger
+logger = getLogger("EchoBot")
+logger.setLevel(DEBUG)
 
 class IPCUtils:
     def connect(self):
@@ -65,11 +69,11 @@ class IPCUtils:
             )
             operation = ipc_client.new_publish_to_iot_core()
             operation.activate(request).result(config_utils.TIMEOUT)
-            config_utils.logger.info("Publishing results to the IoT core...")
+            logger.info("Publishing results to the IoT core...")
             operation.get_response().result(config_utils.TIMEOUT)
         except Exception as e:
-            config_utils.logger.error(str(e))
-            config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
+            logger.error(str(e))
+            logger.error("Exception occured during publish: {}".format(str(e)))
 
     def publish_results_to_pubsub_ipc(self, topic, PAYLOAD):
         r"""
@@ -85,30 +89,30 @@ class IPCUtils:
             publish_message.json_message.message = PAYLOAD
             request.publish_message = publish_message
             operation = ipc_client.new_publish_to_topic()
-            config_utils.logger.info("Publishing results to the Greengrass IPC Pubsub...")
+            logger.info("Publishing results to the Greengrass IPC Pubsub...")
             operation.activate(request)
             future = operation.get_response()
             future.result(config_utils.TIMEOUT)
         except Exception as e:
-            config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
+            logger.error("Exception occured during publish: {}".format(str(e)))
 
     def subscribe_to_cloud(self, topic, streamhandler):
         try:
-            config_utils.logger.info("Subscribing to Topic: {}".format(topic))
+            logger.info("Subscribing to Topic: {}".format(topic))
             request = SubscribeToTopicRequest()
-            config_utils.logger.info("1")
+            logger.info("1")
             request.topic_name = topic
-            config_utils.logger.info("2")
+            logger.info("2")
             handler = streamhandler
-            config_utils.logger.info("3")
+            logger.info("3")
             operation = ipc_client.new_subscribe_to_topic(handler) 
-            config_utils.logger.info("4")
+            logger.info("4")
             future = operation.activate(request)
-            config_utils.logger.info("5")
+            logger.info("5")
             future.result(config_utils.TIMEOUT)
-            config_utils.logger.info("Subscribed to Topic: {}".format(topic))
+            logger.info("Subscribed to Topic: {}".format(topic))
         except Exception as e:
-            config_utils.logger.error(
+            logger.error(
                 "Exception occured during subscription: {}".format(str(e))
             )
             exit(1)
@@ -126,7 +130,7 @@ class IPCUtils:
             result = operation.get_response().result(config_utils.TIMEOUT)
             return result.value
         except Exception as e:
-            config_utils.logger.error(
+            logger.error(
                 "Exception occured during fetching the configuration: {}".format(str(e))
             )
             exit(1)
@@ -147,7 +151,7 @@ class IPCUtils:
             return result.payload
             
         except Exception as e:
-            config_utils.logger.error(
+            logger.error(
                 "Exception occured during fetching of shadow: {}".format(str(e))
             )
     
@@ -168,7 +172,7 @@ class IPCUtils:
             return result.payload
             
         except Exception as e:
-            config_utils.logger.error(
+            logger.error(
                 "Exception occured while updating shadow: {}".format(str(e))
             )
 
@@ -176,9 +180,9 @@ class IPCUtils:
 # Get the ipc client
 try:
     ipc_client = client.GreengrassCoreIPCClient(IPCUtils().connect())
-    config_utils.logger.info("Created IPC client...")
+    logger.info("Created IPC client...")
 except Exception as e:
-    config_utils.logger.error(
+    logger.error(
         "Exception occured during the creation of an IPC client: {}".format(str(e))
     )
     exit(1)

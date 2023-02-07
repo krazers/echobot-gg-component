@@ -14,7 +14,3 @@ SHAPE = (HEIGHT, WIDTH)
 QOS_TYPE = QOS.AT_LEAST_ONCE
 TIMEOUT = 15
 SCORE_CONVERTER = 255
-
-# Get a logger
-logger = getLogger()
-logger.setLevel(DEBUG)

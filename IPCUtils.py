@@ -95,7 +95,7 @@ class IPCUtils:
     def subscribe_to_cloud(self, topic, streamhandler):
         config_utils.logger.error("Subscribed to Topic: {}".format(topic))
         request = SubscribeToTopicRequest()
-        request.topic = topic
+        request.topic_name = topic
         handler = streamhandler
         operation = ipc_client.new_subscribe_to_topic(handler) 
         future = operation.activate(request)
@@ -104,7 +104,7 @@ class IPCUtils:
     def subscribe_to_cloud_test(self, topic):
         config_utils.logger.error("Subscribed to Topic: {}".format(topic))
         request = SubscribeToTopicRequest()
-        request.topic = topic
+        request.topic_name = topic
         handler = UpdatedShadowStreamHandler()
         operation = ipc_client.new_subscribe_to_topic(handler) 
         future = operation.activate(request)

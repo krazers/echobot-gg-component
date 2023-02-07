@@ -106,6 +106,7 @@ class IPCUtils:
             logger.info("Subscribing to Topic: {}".format(topic))
             request = SubscribeToIoTCoreRequest()
             request.topic_name = topic
+            request.qos = QOS_TYPE
             handler = streamhandler
             operation = ipc_client.new_subscribe_to_iot_core(handler) 
             future = operation.activate(request)

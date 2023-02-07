@@ -90,16 +90,22 @@ class IPCUtils:
             future = operation.get_response()
             future.result(config_utils.TIMEOUT)
         except Exception as e:
-            config_utils.logger.info("Exception occured during publish: {}".format(str(e)))
+            config_utils.logger.error("Exception occured during publish: {}".format(str(e)))
 
     def subscribe_to_cloud(self, topic, streamhandler):
-        request = SubscribeToTopicRequest()
-        request.topic_name = topic
-        handler = streamhandler
-        operation = ipc_client.new_subscribe_to_topic(handler) 
-        future = operation.activate(request)
-        config_utils.logger.info(future.result(config_utils.TIMEOUT))
-        config_utils.logger.info("Subscribed to Topic: {}".format(topic))
+        try:
+            request = SubscribeToTopicRequest()
+            request.topic_name = topic
+            handler = streamhandler
+            operation = ipc_client.new_subscribe_to_topic(handler) 
+            future = operation.activate(request)
+            future.result(config_utils.TIMEOUT)
+            config_utils.logger.info("Subscribed to Topic: {}".format(topic))
+        except Exception as e:
+            config_utils.logger.error(
+                "Exception occured during subscription: {}".format(str(e))
+            )
+            exit(1)
 
     def get_configuration(self):
         r"""

@@ -1,5 +1,6 @@
 #!/usr/bin/python3.6
-from logging import INFO, DEBUG, StreamHandler, getLogger, basicConfig
+from logging import INFO, DEBUG, StreamHandler, getLogger
+import logging
 import IPCUtils as ipc_utils
 import sys
 import time

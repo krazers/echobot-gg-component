@@ -3,8 +3,8 @@
 
 from json import dumps, loads
 from os import getenv
-from logging import INFO, DEBUG, StreamHandler, getLogger, basicConfig
-import sys
+from logging import INFO, DEBUG, StreamHandler, getLogger
+import logging, sys
 
 import awsiot.greengrasscoreipc.client as client
 

@@ -48,6 +48,7 @@ class GetShadowStreamHandler(client.SubscribeToTopicStreamHandler):
 
     def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
         global mode
+        config_utils.logger.info(event.jsonMessage.message)
         if("desired" in event.jsonMessage.message["state"]):
             if("mode" in event.jsonMessage.message["state"]["desired"]):
                 if(mode != event.jsonMessage.message["state"]["desired"]["mode"]):
@@ -75,6 +76,7 @@ class UpdatedShadowStreamHandler(client.SubscribeToTopicStreamHandler):
 
     def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
         global mode    
+        config_utils.logger.info(event.jsonMessage.message)
         if("mode" in event.jsonMessage.message["state"]):
             if(mode != event.jsonMessage.message["state"]["mode"]):
                 mode = event.jsonMessage.message["state"]["mode"]

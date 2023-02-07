@@ -16,6 +16,7 @@ import torch.nn.functional as F
 import datetime
 import os
 import awsiot.greengrasscoreipc.client as client
+from awsiot.eventstreamrpc import Connection, LifecycleHandler, MessageAmendment
 from awsiot.greengrasscoreipc.model import (
     IoTCoreMessage,
     QOS,

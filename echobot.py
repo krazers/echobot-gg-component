@@ -371,9 +371,9 @@ stdev = 255.0 * np.array([0.229, 0.224, 0.225])
 normalize = torchvision.transforms.Normalize(mean, stdev)
 
 # Subscribe to shadow topics
-ipc_utils.IPCUtils().subscribe_to_topic(config["EchoBotStatusUpdateSubscribe"], UpdatedShadowStreamHandler())
+ipc_utils.IPCUtils().subscribe_to_cloud(config["EchoBotStatusUpdateSubscribe"], UpdatedShadowStreamHandler())
 time.sleep(2)
-ipc_utils.IPCUtils().subscribe_to_topic(config["EchoBotStatusGetSubscribe"], GetShadowStreamHandler())
+ipc_utils.IPCUtils().subscribe_to_cloud(config["EchoBotStatusGetSubscribe"], GetShadowStreamHandler())
 time.sleep(2)
 update_status("Ready for commands")
 

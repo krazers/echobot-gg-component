@@ -14,6 +14,7 @@ import datetime
 import os
 import awsiot.greengrasscoreipc.client as client
 from awsiot.greengrasscoreipc.model import (
+    IoTCoreMessage,
     QOS,
     ConfigurationUpdateEvents,
     GetConfigurationRequest,

@@ -15,6 +15,7 @@ import torchvision
 import torch.nn.functional as F
 import datetime
 import os
+import threading
 import awsiot.greengrasscoreipc.client as client
 from awsiot.eventstreamrpc import Connection, LifecycleHandler, MessageAmendment
 from awsiot.greengrasscoreipc.model import (
@@ -50,11 +51,6 @@ speed = 0.4 #normal
 turn_gain = 0.8
 width = int(300)
 height = int(300)
-MAX_DISCOVERY_RETRIES = 10   
-retryCount = MAX_DISCOVERY_RETRIES
-discovered = False
-groupCA = None
-coreInfo = None
 filespath = "/echobot/"
 null = None
 
@@ -103,28 +99,12 @@ class IPCUtils:
             logger.error(str(e))
             logger.error("Exception occured during publish: {}".format(str(e)))
 
-    def publish_results_to_pubsub_ipc(self, topic, PAYLOAD):
-        r"""
-        Ipc client creates a request and activates the operation to publish messages to the Greengrass
-        IPC Pubsub
-        :param PAYLOAD: An dictionary object with inference results.
-        """
-        try:
-            request = PublishToTopicRequest()
-            request.topic = topic
-            publish_message = PublishMessage()
-            publish_message.json_message = JsonMessage()
-            publish_message.json_message.message = PAYLOAD
-            request.publish_message = publish_message
-            operation = ipc_client.new_publish_to_topic()
-            logger.info("Publishing results to the Greengrass IPC Pubsub...")
-            operation.activate(request)
-            future = operation.get_response()
-            future.result(TIMEOUT)
-        except Exception as e:
-            logger.error("Exception occured during publish: {}".format(str(e)))
-
     def subscribe_to_cloud(self, topic, messagetype):
+        r"""
+        Subcription to topics in IoT Core directly. 
+        Note: Passing message type as a way to detect with handler to use. 
+        Passing handler as a argument didn't appear to work.
+        """
         try:
             logger.info("Subscribing to Topic: {}".format(topic))
             request = SubscribeToIoTCoreRequest()
@@ -161,52 +141,16 @@ class IPCUtils:
             )
             exit(1)
     
-    def sample_get_thing_shadow_request(thingName, shadowName):
-        try:                    
-            # create the GetThingShadow request
-            get_thing_shadow_request = GetThingShadowRequest()
-            get_thing_shadow_request.thing_name = thingName
-            get_thing_shadow_request.shadow_name = shadowName
-            
-            # retrieve the GetThingShadow response after sending the request to the IPC server
-            op = ipc_client.new_get_thing_shadow()
-            op.activate(get_thing_shadow_request)
-            fut = op.get_response()
-            
-            result = fut.result(TIMEOUT)
-            return result.payload
-            
-        except Exception as e:
-            logger.error(
-                "Exception occured during fetching of shadow: {}".format(str(e))
-            )
-    
-    def sample_update_thing_shadow_request(thingName, shadowName, payload):
-        try:
-            # create the UpdateThingShadow request
-            update_thing_shadow_request = UpdateThingShadowRequest()
-            update_thing_shadow_request.thing_name = thingName
-            update_thing_shadow_request.shadow_name = shadowName
-            update_thing_shadow_request.payload = payload
-                            
-            # retrieve the UpdateThingShadow response after sending the request to the IPC server
-            op = ipc_client.new_update_thing_shadow()
-            op.activate(update_thing_shadow_request)
-            fut = op.get_response()
-            
-            result = fut.result(TIMEOUT)
-            return result.payload
-            
-        except Exception as e:
-            logger.error(
-                "Exception occured while updating shadow: {}".format(str(e))
-            )
 
 class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
     def __init__(self):
         super().__init__()
-
+    
     def on_stream_event(self, event: IoTCoreMessage) -> None:
+        r"""
+        On messages received aft, look at delta changes to detect
+        which mode to be on
+        """
         global mode
         logger.info(event.message.payload)
         message = json.loads(event.message.payload)
@@ -216,11 +160,11 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                     mode = message["state"]["desired"]["mode"]
                     logger.info("Current mode is {}".format(mode))
                     if(mode == "stop"):
-                        stop_object_following()
+                        threading.Thread(target=stop_object_following, args=()).start()
                     elif(mode == "follow"):
-                        start_object_following()
+                        threading.Thread(target=start_object_following, args=()).start()
                     elif(mode == "avoidobstacles"):
-                        start_avoid_obstacles()
+                        threading.Thread(target=start_avoid_obstacles, args=()).start()
 
     def on_stream_error(self, error: Exception) -> bool:
         # Handle error.
@@ -245,11 +189,11 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                 mode = message["state"]["mode"]
                 logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
-                    stop_object_following()
+                    threading.Thread(target=stop_object_following, args=()).start()
                 elif(mode == "follow"):
-                    start_object_following()
+                    threading.Thread(target=start_object_following, args=()).start()
                 elif(mode == "avoidobstacles"):
-                    start_avoid_obstacles()
+                    threading.Thread(target=start_avoid_obstacles, args=()).start()
         if("speed" in message["state"]):
             update_speed(float(message["state"]["speed"]))
         if("command" in message["state"]):
@@ -341,7 +285,6 @@ def update_status(status):
     IPCUtils().publish_results_to_cloud(config["EchoBotStatusUpdatePublish"], message)
 
   
-    
 def preprocess1(camera_value, device, normalize):
     x = camera_value
     x = cv2.resize(x, (224, 224))

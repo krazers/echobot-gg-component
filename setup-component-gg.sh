@@ -70,7 +70,7 @@ touch ~/GreengrassCore/recipes/$component_name-$component_version.json
         "DefaultConfiguration": {
         "accessControl": {   
                 "aws.greengrass.ipc.mqttproxy": {
-                    "<component_name>:mqttproxy:1": {
+                    "<component_name>:pubsub:1": {
                         "policyDescription": "Allows access to publish/subscribe to all topics.",
                         "operations": [
                             "aws.greengrass#PublishToIoTCore",

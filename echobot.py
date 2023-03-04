@@ -415,7 +415,6 @@ def turn_command(command):
             robot.stop()
     except:
         pass
-        
     
 def start_avoid_obstacles():
     logger.info("Starting avoid obstacles routine")

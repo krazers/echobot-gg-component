@@ -47,7 +47,8 @@ logging.basicConfig(stream=sys.stdout, level=DEBUG)
 logger.info("Libraries loaded")
 
 # Global variables
-speed = 0.4 #normal
+default_speed = 0.4
+speed = 0 #Current Speed
 turn_gain = 0.8
 width = int(300)
 height = int(300)
@@ -417,6 +418,7 @@ def turn_command(command):
     
 def start_avoid_obstacles():
     logger.info("Starting avoid obstacles routine")
+    update_speed(default_speed)
     update_mode("avoidobstacles")
     camera.unobserve_all()
     update({'new': camera.value})
@@ -424,6 +426,7 @@ def start_avoid_obstacles():
  
 def start_object_following():
     logger.info("Starting object follow routine")
+    update_speed(default_speed)
     update_mode("follow")
     camera.unobserve_all()
     camera.observe(execute, names='value')
@@ -431,6 +434,7 @@ def start_object_following():
 def stop_object_following():
     global robot, camera
     logger.info("Stopping object following routing")
+    update_speed(0)
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)

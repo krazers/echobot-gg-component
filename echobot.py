@@ -47,7 +47,7 @@ logging.basicConfig(stream=sys.stdout, level=DEBUG)
 logger.info("Libraries loaded")
 
 # Global variables
-default_speed = 0.4
+default_speed = 0.3 
 speed = 0 #Current Speed
 turn_gain = 0.8
 width = int(300)

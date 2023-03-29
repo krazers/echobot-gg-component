@@ -341,7 +341,7 @@ def execute(change):
     # turn left if blocked
     if prob_blocked > 0.5:
         robot.left(0.3)
-        report_detections(True,1,False)
+        #report_detections(True,1,False)
         #image_widget.value = bgr8_to_jpeg(image)
         return
         
@@ -366,7 +366,7 @@ def execute(change):
     # otherwise go forward if no target detected
     if det is None:
         robot.forward(float(speed))
-        report_detections(False,0,False)
+        #report_detections(False,0,False)
         
     # otherwsie steer towards target
     else:
@@ -376,7 +376,7 @@ def execute(change):
             float(speed + turn_gain * center[0]),
             float(speed - turn_gain * center[0])
         )
-        report_detections(False,len(detections),True)
+        #report_detections(False,len(detections),True)
         
  
 # Avoid obstacles
@@ -393,10 +393,10 @@ def update(change):
     
     if prob_blocked < 0.5:
         robot.forward(float(speed))
-        report_detections(False,1,False)
+        #report_detections(False,1,False)
     else:
         robot.left(0.4)
-        report_detections(True,1,False)
+        #report_detections(True,1,False)
     
     time.sleep(0.001)       
 
@@ -474,8 +474,8 @@ from jetbot import ObjectDetector
 logger.info("Loading coco model...")
 
 # Load object detector for following
-model = None
-#model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
+model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
+
 from jetbot import bgr8_to_jpeg
 logger.info("Loading camera")
 update_status("Loading camera")

@@ -474,7 +474,8 @@ from jetbot import ObjectDetector
 logger.info("Loading coco model...")
 
 # Load object detector for following
-model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
+model = None
+#model = ObjectDetector('/echobot/ssd_mobilenet_v2_coco.engine')
 from jetbot import bgr8_to_jpeg
 logger.info("Loading camera")
 update_status("Loading camera")

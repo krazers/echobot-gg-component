@@ -436,7 +436,7 @@ def start_object_following():
 def stop_object_following():
     global robot, camera
     logger.info("Stopping object following routing")
-    update_speed(0)
+    update_speed(0.0001)
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)

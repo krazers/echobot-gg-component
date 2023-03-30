@@ -237,10 +237,11 @@ def update_mode(currentmode):
     IPCUtils().publish_results_to_cloud(config["EchoBotStatusUpdatePublish"], message)
 
 
-def update_speed(currentspeed):
+def update_speed(currentspeed, publishonly=False):
     global speed
     # Update shadow with current state
-    speed = currentspeed
+    if(publishonly == False):
+        speed = currentspeed
     message = {
         "state": {
             "desired":{
@@ -434,11 +435,11 @@ def start_object_following():
     
 def stop_object_following():
     logger.info("Stopping object following routing")
-    update_speed(0)
+    update_speed(0, True)
     update_mode("stop")
-    #camera.unobserve_all()
+    camera.unobserve_all()
     time.sleep(1.0)
-    #robot.stop()
+    robot.stop()
     logger.info("EchoBot stopped")
 
 

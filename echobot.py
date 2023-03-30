@@ -161,7 +161,7 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                     mode = message["state"]["desired"]["mode"]
                     logger.info("Current mode is {}".format(mode))
                     if(mode == "stop"):
-                        stop_object_following()
+                        threading.Thread(target=stop_object_following, args=()).start()
                     elif(mode == "follow"):
                         threading.Thread(target=start_object_following, args=()).start()
                     elif(mode == "avoidobstacles"):
@@ -190,7 +190,7 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                 mode = message["state"]["mode"]
                 logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
-                    stop_object_following()
+                    threading.Thread(target=stop_object_following, args=()).start()
                 elif(mode == "follow"):
                     threading.Thread(target=start_object_following, args=()).start()
                 elif(mode == "avoidobstacles"):
@@ -381,25 +381,24 @@ def execute(change):
  
 # Avoid obstacles
 def update(change):
-    if(speed > 0):
-        x = change['new'] 
-        
-        x = preprocess2(x)
-        y = collision_model(x)
-        
-        # we apply the `softmax` function to normalize the output vector so it sums to 1 (which makes it a probability distribution)
-        y = F.softmax(y, dim=1)
-        
-        prob_blocked = float(y.flatten()[0])
-        
-        if prob_blocked < 0.5:
-            robot.forward(float(speed))
-            #report_detections(False,1,False)
-        else:
-            robot.left(0.4)
-            #report_detections(True,1,False)
-        
-        time.sleep(0.001)       
+    x = change['new'] 
+    
+    x = preprocess2(x)
+    y = collision_model(x)
+    
+    # we apply the `softmax` function to normalize the output vector so it sums to 1 (which makes it a probability distribution)
+    y = F.softmax(y, dim=1)
+    
+    prob_blocked = float(y.flatten()[0])
+    
+    if prob_blocked < 0.5:
+        robot.forward(float(speed))
+        #report_detections(False,1,False)
+    else:
+        robot.left(0.4)
+        #report_detections(True,1,False)
+    
+    time.sleep(0.001)       
 
 def turn_command(command):
     try:
@@ -437,9 +436,9 @@ def stop_object_following():
     logger.info("Stopping object following routing")
     update_speed(0)
     update_mode("stop")
-    camera.unobserve_all()
+    #camera.unobserve_all()
     time.sleep(1.0)
-    robot.stop()
+    #robot.stop()
     logger.info("EchoBot stopped")
 
 

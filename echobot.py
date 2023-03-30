@@ -161,7 +161,7 @@ class GetShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                     mode = message["state"]["desired"]["mode"]
                     logger.info("Current mode is {}".format(mode))
                     if(mode == "stop"):
-                        threading.Thread(target=stop_object_following, args=()).start()
+                        stop_object_following()
                     elif(mode == "follow"):
                         threading.Thread(target=start_object_following, args=()).start()
                     elif(mode == "avoidobstacles"):
@@ -439,7 +439,7 @@ def stop_object_following():
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)
-    ##robot.stop()
+    robot.stop()
     logger.info("EchoBot stopped")
 
 

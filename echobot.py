@@ -398,8 +398,7 @@ def update(change):
         robot.left(0.4)
         #report_detections(True,1,False)
     
-    #time.sleep(0.001)       
-    time.sleep(0.01)       
+    time.sleep(0.001)       
 
 def turn_command(command):
     try:

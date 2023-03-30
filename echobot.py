@@ -190,7 +190,7 @@ class UpdatedShadowStreamHandler(client.SubscribeToIoTCoreStreamHandler):
                 mode = message["state"]["mode"]
                 logger.info("Mode changed to {}".format(mode))
                 if(mode == "stop"):
-                    threading.Thread(target=stop_object_following, args=()).start()
+                    stop_object_following()
                 elif(mode == "follow"):
                     threading.Thread(target=start_object_following, args=()).start()
                 elif(mode == "avoidobstacles"):

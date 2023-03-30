@@ -43,7 +43,7 @@ from awscrt.io import (
 
 # Get a logger
 logger = getLogger()
-logging.basicConfig(stream=sys.stdout, level=DEBUG)
+logging.basicConfig(stream=sys.stdout, level=INFO)
 logger.info("Libraries loaded")
 
 # Global variables

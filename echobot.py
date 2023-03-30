@@ -381,24 +381,25 @@ def execute(change):
  
 # Avoid obstacles
 def update(change):
-    x = change['new'] 
-    
-    x = preprocess2(x)
-    y = collision_model(x)
-    
-    # we apply the `softmax` function to normalize the output vector so it sums to 1 (which makes it a probability distribution)
-    y = F.softmax(y, dim=1)
-    
-    prob_blocked = float(y.flatten()[0])
-    
-    if prob_blocked < 0.5:
-        robot.forward(float(speed))
-        #report_detections(False,1,False)
-    else:
-        robot.left(0.4)
-        #report_detections(True,1,False)
-    
-    time.sleep(0.001)       
+    if(speed > 0):
+        x = change['new'] 
+        
+        x = preprocess2(x)
+        y = collision_model(x)
+        
+        # we apply the `softmax` function to normalize the output vector so it sums to 1 (which makes it a probability distribution)
+        y = F.softmax(y, dim=1)
+        
+        prob_blocked = float(y.flatten()[0])
+        
+        if prob_blocked < 0.5:
+            robot.forward(float(speed))
+            #report_detections(False,1,False)
+        else:
+            robot.left(0.4)
+            #report_detections(True,1,False)
+        
+        time.sleep(0.001)       
 
 def turn_command(command):
     try:
@@ -439,7 +440,7 @@ def stop_object_following():
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)
-    robot.stop()
+    #robot.stop()
     logger.info("EchoBot stopped")
 
 

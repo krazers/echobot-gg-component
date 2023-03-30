@@ -413,7 +413,7 @@ def turn_command(command):
             elif(command == "around"):
                 robot.left(0.4)
                 time.sleep(1)
-            else
+            else:
                 robot.stop()
     except:
         pass
@@ -440,7 +440,7 @@ def stop_object_following():
     update_mode("stop")
     camera.unobserve_all()
     time.sleep(1.0)
-    #robot.stop()
+    robot.stop()
     logger.info("EchoBot stopped")
 
 
